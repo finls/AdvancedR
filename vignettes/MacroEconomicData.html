@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Gregory Green PhD" />
+
+<meta name="date" content="2017-06-19" />
+
+<title>Macroeconomic Data Extraction</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Macroeconomic Data Extraction</h1>
+<h4 class="author"><em>Gregory Green PhD</em></h4>
+<h4 class="date"><em>2017-06-19</em></h4>
+
+
+
+<pre><code>## Loading tidyverse: ggplot2
+## Loading tidyverse: tibble
+## Loading tidyverse: tidyr
+## Loading tidyverse: readr
+## Loading tidyverse: purrr
+## Loading tidyverse: dplyr</code></pre>
+<pre><code>## Conflicts with tidy packages ----------------------------------------------</code></pre>
+<pre><code>## filter(): dplyr, stats
+## lag():    dplyr, stats</code></pre>
+<div id="advancedr" class="section level1">
+<h1>AdvancedR</h1>
+<p>The goal of Macroeconomic functions is to extract macroeconomic time series data quickly and efficiently. If desired the extracted time series data can be expanded to include columns of growth rates. In addition, when presenting macroeconomic times series data the points in the data where a recession occurred is often informative. This package includes a function used to extract US recession dates and prepare them for presentation with other macroeconomic data.</p>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>Currently this package will extract the following four time series, Real GDP (RGDP), Consumer Price Index (CPI), the unemployment rate (unemploymentrate), and the US population (population), using the ME_dtaextract() function For example to extract the macroeconomic time series for real gross domestic product:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">X&lt;-<span class="kw">ME_dtaextract</span>(<span class="st">&quot;rgdp&quot;</span>)
+<span class="kw">kable</span>(<span class="kw">head</span>(X))</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">date</th>
+<th align="right">rgdp</th>
+<th align="left">units</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1947-01-01</td>
+<td align="right">1934.5</td>
+<td align="left">millions</td>
+</tr>
+<tr class="even">
+<td align="left">1947-04-01</td>
+<td align="right">1932.3</td>
+<td align="left">millions</td>
+</tr>
+<tr class="odd">
+<td align="left">1947-07-01</td>
+<td align="right">1930.3</td>
+<td align="left">millions</td>
+</tr>
+<tr class="even">
+<td align="left">1947-10-01</td>
+<td align="right">1960.7</td>
+<td align="left">millions</td>
+</tr>
+<tr class="odd">
+<td align="left">1948-01-01</td>
+<td align="right">1989.5</td>
+<td align="left">millions</td>
+</tr>
+<tr class="even">
+<td align="left">1948-04-01</td>
+<td align="right">2021.9</td>
+<td align="left">millions</td>
+</tr>
+</tbody>
+</table>
+<p>The data in this table is in levels; i.e. for each date in the table we’re given the level of real GDP. The data in this table can easily be rendered in a graphical form.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">X %&gt;%<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>rgdp))+
+<span class="st">        </span><span class="kw">geom_point</span>()+
+<span class="st">        </span><span class="kw">geom_line</span>(<span class="dt">color=</span><span class="st">&quot;dodgerblue3&quot;</span>)+
+<span class="st">        </span><span class="kw">geom_hline</span>(<span class="dt">yintercept=</span><span class="dv">0</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>In many circumstances the data given in levels is more interesting if it is transformed to growth rates. This is especially true of macroeconomic data. For example, transforming the CPI data into growth rates creates a data series representing rates of inflation. For example, converting real gross domestic product to growth rates in real GDP is done quickly using the code below.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">X&lt;-X %&gt;%<span class="st"> </span><span class="kw">ME_growth</span>()
+<span class="kw">kable</span>(<span class="kw">head</span>(X))</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">date</th>
+<th align="right">rgdp</th>
+<th align="left">units</th>
+<th align="right">Growth</th>
+<th align="left">Measure</th>
+<th align="right">Annual_Growth</th>
+<th align="left">Measured</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1947-04-01</td>
+<td align="right">1932.3</td>
+<td align="left">millions</td>
+<td align="right">-0.0011372</td>
+<td align="left">Quarterly</td>
+<td align="right">-0.0045490</td>
+<td align="left">Annual</td>
+</tr>
+<tr class="even">
+<td align="left">1947-07-01</td>
+<td align="right">1930.3</td>
+<td align="left">millions</td>
+<td align="right">-0.0010350</td>
+<td align="left">Quarterly</td>
+<td align="right">-0.0041401</td>
+<td align="left">Annual</td>
+</tr>
+<tr class="odd">
+<td align="left">1947-10-01</td>
+<td align="right">1960.7</td>
+<td align="left">millions</td>
+<td align="right">0.0157488</td>
+<td align="left">Quarterly</td>
+<td align="right">0.0629954</td>
+<td align="left">Annual</td>
+</tr>
+<tr class="even">
+<td align="left">1948-01-01</td>
+<td align="right">1989.5</td>
+<td align="left">millions</td>
+<td align="right">0.0146886</td>
+<td align="left">Quarterly</td>
+<td align="right">0.0587545</td>
+<td align="left">Annual</td>
+</tr>
+<tr class="odd">
+<td align="left">1948-04-01</td>
+<td align="right">2021.9</td>
+<td align="left">millions</td>
+<td align="right">0.0162855</td>
+<td align="left">Quarterly</td>
+<td align="right">0.0651420</td>
+<td align="left">Annual</td>
+</tr>
+<tr class="even">
+<td align="left">1948-07-01</td>
+<td align="right">2033.2</td>
+<td align="left">millions</td>
+<td align="right">0.0055888</td>
+<td align="left">Quarterly</td>
+<td align="right">0.0223552</td>
+<td align="left">Annual</td>
+</tr>
+</tbody>
+</table>
+<p>The length of the data series can be manipulated by way of the date variable; e.g., maybe only real GDP data since 2000 is of interest. We can reduce the scope of the data with another call to the ME_growth function, as shown here.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">X1&lt;-<span class="kw">ME_growth</span>(X,<span class="st">&quot;2000-01-01&quot;</span>)
+<span class="kw">kable</span>(<span class="kw">head</span>(X1))</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">date</th>
+<th align="right">rgdp</th>
+<th align="left">units</th>
+<th align="right">Growth</th>
+<th align="left">Measure</th>
+<th align="right">Annual_Growth</th>
+<th align="left">Measured</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2000-01-01</td>
+<td align="right">12359.1</td>
+<td align="left">millions</td>
+<td align="right">0.0029051</td>
+<td align="left">Quarterly</td>
+<td align="right">0.0116203</td>
+<td align="left">Annual</td>
+</tr>
+<tr class="even">
+<td align="left">2000-04-01</td>
+<td align="right">12592.5</td>
+<td align="left">millions</td>
+<td align="right">0.0188849</td>
+<td align="left">Quarterly</td>
+<td align="right">0.0755395</td>
+<td align="left">Annual</td>
+</tr>
+<tr class="odd">
+<td align="left">2000-07-01</td>
+<td align="right">12607.7</td>
+<td align="left">millions</td>
+<td align="right">0.0012071</td>
+<td align="left">Quarterly</td>
+<td align="right">0.0048283</td>
+<td align="left">Annual</td>
+</tr>
+<tr class="even">
+<td align="left">2000-10-01</td>
+<td align="right">12679.3</td>
+<td align="left">millions</td>
+<td align="right">0.0056791</td>
+<td align="left">Quarterly</td>
+<td align="right">0.0227163</td>
+<td align="left">Annual</td>
+</tr>
+<tr class="odd">
+<td align="left">2001-01-01</td>
+<td align="right">12643.3</td>
+<td align="left">millions</td>
+<td align="right">-0.0028393</td>
+<td align="left">Quarterly</td>
+<td align="right">-0.0113571</td>
+<td align="left">Annual</td>
+</tr>
+<tr class="even">
+<td align="left">2001-04-01</td>
+<td align="right">12710.3</td>
+<td align="left">millions</td>
+<td align="right">0.0052992</td>
+<td align="left">Quarterly</td>
+<td align="right">0.0211970</td>
+<td align="left">Annual</td>
+</tr>
+</tbody>
+</table>
+<p>Finally, most macroeconomic data, when presented in a classroom/report setting, include markers showing where in time recessions occurred. This data is collected by the national bureau of economic research (NBER) and deposited at the St. Louis FED. This data is extracted and prepared for graphing use the ME_Rec function as shown here.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rec&lt;-<span class="kw">ME_Rec</span>(X1)
+<span class="kw">kable</span>(<span class="kw">head</span>(rec))</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">date</th>
+<th align="right">recession</th>
+<th align="left">units</th>
+<th align="right">Cyc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2000-01-01</td>
+<td align="right">0</td>
+<td align="left">unit</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">2000-02-01</td>
+<td align="right">0</td>
+<td align="left">unit</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">2000-03-01</td>
+<td align="right">0</td>
+<td align="left">unit</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">2000-04-01</td>
+<td align="right">0</td>
+<td align="left">unit</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">2000-05-01</td>
+<td align="right">0</td>
+<td align="left">unit</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">2000-06-01</td>
+<td align="right">0</td>
+<td align="left">unit</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>With the data trimmed to 2000 we can use the recession data to place recession markers in the picture showing real GDP series.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">X1%&gt;%<span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>rgdp))+
+<span class="st">        </span><span class="kw">geom_point</span>()+
+<span class="st">        </span><span class="kw">geom_line</span>(<span class="dt">color=</span><span class="st">&quot;red3&quot;</span>)+
+<span class="st">        </span><span class="kw">geom_path</span>(<span class="dt">data=</span>rec, <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>Cyc))+
+<span class="st">        </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The Federal Reserve Bank of St. Louis maintains thousands of economic time series all are available to the public. However, at this time ME_dtaextract function will only extract the four series stated above. The functions ME_growth and ME_Rec will work with any of the FEDS time series data.</p>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
